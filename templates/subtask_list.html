@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Subtasks - Hangarin{% endblock %}
+
+{% block content %}
+<div class="container-fluid pb-5">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h1 class="text-dark mb-1" style="font-weight: 800; font-size: 3rem; letter-spacing: -1.5px;">Subtasks</h1>
+            <p class="text-muted fs-5" style="font-weight: 500;">Break down your tasks into smaller actionable steps.</p>
+        </div>
+        <a href="{% url 'subtask-add' %}" class="btn btn-dark rounded-pill px-5 py-3" style="font-weight: 800;">CREATE SUBTASK</a>
+    </div>
+
+    <div class="card border-0 shadow-sm" style="border-radius: 28px; overflow: hidden;">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead style="background-color: #f8fafc;">
+                    <tr>
+                        <th class="ps-4 py-4 text-uppercase" style="font-weight: 800; color: #1e293b; font-size: 0.75rem; letter-spacing: 1px;">Subtask Title</th>
+                        <th class="text-uppercase" style="font-weight: 800; color: #1e293b; font-size: 0.75rem; letter-spacing: 1px;">Parent Task</th>
+                        <th class="text-uppercase" style="font-weight: 800; color: #1e293b; font-size: 0.75rem; letter-spacing: 1px;">Status</th>
+                        <th class="text-end pe-4 text-uppercase" style="font-weight: 800; color: #1e293b; font-size: 0.75rem; letter-spacing: 1px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for subtask in object_list %}
+                    <tr style="border-bottom: 1px solid #edf2f7;">
+                        <td class="ps-4 py-4">
+                            <div class="d-flex align-items-center">
+                                <div class="me-3" style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 10px; background-color: #f0f9ff; color: #0284c7;">
+                                    <i class="fas fa-level-down-alt" style="font-size: 0.9rem;"></i>
+                                </div>
+                                <span class="text-dark" style="font-weight: 800; font-size: 1.05rem;">{{ subtask.title }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span style="font-weight: 700; color: #64748b;">
+                                <i class="fas fa-link me-1" style="font-size: 0.8rem;"></i> {{ subtask.parent_task.title }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if subtask.status == 'Completed' %}
+                                <span class="badge rounded-pill px-4 py-2" style="font-weight: 800; background-color: #ecfdf5; color: #059669;">COMPLETED</span>
+                            {% elif subtask.status == 'In Progress' %}
+                                <span class="badge rounded-pill px-4 py-2" style="font-weight: 800; background-color: #eef2ff; color: #6366f1;">IN PROGRESS</span>
+                            {% else %}
+                                <span class="badge rounded-pill px-4 py-2" style="font-weight: 800; background-color: #fffbeb; color: #d97706;">PENDING</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end pe-4">
+                            <a href="{% url 'subtask-update' subtask.id %}" class="btn btn-sm me-2" style="border-radius: 10px; background-color: #f1f5f9; color: #475569;"><i class="fas fa-pen"></i></a>
+                            <a href="{% url 'subtask-delete' subtask.id %}" class="btn btn-sm" style="border-radius: 10px; background-color: #fff1f2; color: #f43f5e;"><i class="fas fa-trash"></i></a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center py-5">
+                            <p class="text-muted mb-0" style="font-weight: 700;">No subtasks found.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="mt-4">
+        {% include 'includes/pagination.html' %}
+    </div>
+</div>
+{% endblock %}

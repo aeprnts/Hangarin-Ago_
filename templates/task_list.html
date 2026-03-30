@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Tasks - Hangarin{% endblock %}
+
+{% block content %}
+<div class="container-fluid pb-5">
+    
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h1 class="text-dark mb-1" style="font-weight: 800; font-size: 3rem; letter-spacing: -1.5px;">Tasks</h1>
+            <p class="text-muted fs-5" style="font-weight: 500;">Manage and organize all your tasks in one place.</p>
+        </div>
+        <a href="{% url 'task-add' %}" class="btn btn-dark rounded-pill px-5 py-3" style="font-weight: 800;">CREATE TASK</a>
+    </div>
+
+    <div class="card border-0 shadow-sm" style="border-radius: 28px; overflow: hidden; background-color: #fff;">
+        
+        <div class="p-4 border-bottom bg-white">
+            <form method="GET" action="{% url 'task-list' %}" class="row g-3 align-items-center">
+                <div class="col-md-5">
+                    <div class="d-flex align-items-center px-3 py-2" style="background-color: #f8fafc; border-radius: 14px; border: 1px solid #e2e8f0;">
+                        <i class="fas fa-search text-muted me-2"></i>
+                        <input type="text" name="q" value="{{ request.GET.q }}" class="form-control border-0 bg-transparent shadow-none" style="font-weight: 600;" placeholder="Search tasks...">
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="d-flex align-items-center">
+                        <label class="me-3 mb-0 text-uppercase" style="font-weight: 800; color: #94a3b8; font-size: 0.75rem; letter-spacing: 1px; white-space: nowrap;">Sort By</label>
+                        <select name="sort_by" class="form-select border-0 shadow-none" style="background-color: #f8fafc; font-weight: 700; border-radius: 12px; color: #1e293b;">
+                            <option value="title" {% if request.GET.sort_by == "title" %}selected{% endif %}>Title</option>
+                            <option value="-created_at" {% if request.GET.sort_by == "-created_at" %}selected{% endif %}>Newest</option>
+                            <option value="deadline" {% if request.GET.sort_by == "deadline" %}selected{% endif %}>Deadline</option>
+                            <option value="status" {% if request.GET.sort_by == "status" %}selected{% endif %}>Status</option>
+                            <option value="priority__name" {% if request.GET.sort_by == "priority__name" %}selected{% endif %}>Priority</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-md-3 text-end">
+                    <button type="submit" class="btn btn-primary w-100 rounded-pill py-2" style="font-weight: 800;">APPLY FILTERS</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead style="background-color: #f8fafc;">
+                    <tr>
+                        <th class="ps-4 py-4 text-uppercase" style="font-weight: 800; color: #1e293b; font-size: 0.75rem; letter-spacing: 1px;">Task Name</th>
+                        <th class="text-uppercase" style="font-weight: 800; color: #1e293b; font-size: 0.75rem; letter-spacing: 1px;">Status</th>
+                        <th class="text-uppercase" style="font-weight: 800; color: #1e293b; font-size: 0.75rem; letter-spacing: 1px;">Priority</th>
+                        <th class="text-uppercase" style="font-weight: 800; color: #1e293b; font-size: 0.75rem; letter-spacing: 1px;">Category</th>
+                        <th class="text-uppercase" style="font-weight: 800; color: #1e293b; font-size: 0.75rem; letter-spacing: 1px;">Deadline</th>
+                        <th class="text-end pe-4 text-uppercase" style="font-weight: 800; color: #1e293b; font-size: 0.75rem; letter-spacing: 1px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for task in object_list %}
+                    <tr style="border-bottom: 1px solid #edf2f7;">
+                        <td class="ps-4 py-4">
+                            <div class="d-flex align-items-center">
+                                <div class="me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 12px; background-color: #f0f9ff; color: #0284c7;">
+                                    <i class="fas fa-tasks" style="font-size: 1rem;"></i>
+                                </div>
+                                <span class="text-dark" style="font-weight: 800; font-size: 1.1rem;">{{ task.title }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            {% if task.status == 'Completed' %}
+                                <span class="badge rounded-pill px-4 py-2" style="font-weight: 800; background-color: #ecfdf5; color: #059669;">COMPLETED</span>
+                            {% elif task.status == 'In Progress' %}
+                                <span class="badge rounded-pill px-4 py-2" style="font-weight: 800; background-color: #eef2ff; color: #6366f1;">IN PROGRESS</span>
+                            {% else %}
+                                <span class="badge rounded-pill px-4 py-2" style="font-weight: 800; background-color: #fffbeb; color: #d97706;">PENDING</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span style="font-weight: 700; color: #1e293b;">{{ task.priority }}</span>
+                        </td>
+                        <td>
+                            <span class="border px-3 py-1" style="font-weight: 700; color: #475569; border-radius: 8px; background-color: #f8fafc; font-size: 0.9rem;">{{ task.category }}</span>
+                        </td>
+                        <td>
+                            <span class="text-muted" style="font-weight: 700;">{{ task.deadline|date:"M d, Y" }}</span>
+                        </td>
+                        <td class="text-end pe-4">
+                            <a href="{% url 'task-update' task.id %}" class="btn btn-sm me-2" style="border-radius: 10px; background-color: #f1f5f9; color: #475569; width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center; border: none;">
+                                <i class="fas fa-pen"></i>
+                            </a>
+                            <a href="{% url 'task-delete' task.id %}" class="btn btn-sm" style="border-radius: 10px; background-color: #fff1f2; color: #f43f5e; width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center; border: none;">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5">
+                            <i class="fas fa-clipboard-list fa-3x text-light mb-3 d-block"></i>
+                            <p class="text-muted fs-5" style="font-weight: 800;">Your task list is empty.</p>
+                            <a href="{% url 'task-add' %}" class="btn btn-primary rounded-pill px-4 fw-800 mt-2">CREATE YOUR FIRST TASK</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        {% include 'includes/pagination.html' %}
+    </div>
+</div>
+{% endblock %}
