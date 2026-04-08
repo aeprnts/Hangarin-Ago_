@@ -8,8 +8,6 @@ env/
 db.sqlite3
 media/
 
-staticfiles/
-
 .vscode/
 .idea/
 *.swp
